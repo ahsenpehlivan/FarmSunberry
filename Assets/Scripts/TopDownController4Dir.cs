@@ -1,65 +1,60 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(Animator), typeof(SpriteRenderer))]
-public class TopDownController4Dir : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
+public class TopDownController : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 4f;
-    public bool normalizeDiagonal = true;   // çaprazlarda hız sabit kalsın
-    public bool useFlipForWest = true;      // sol klibin yoksa E'yi mirrorda kullan
+    public bool normalizeDiagonal = true;
 
-    [Header("Refs (auto)")]
-    public Rigidbody2D rb;
-    public Animator animator;
-    public SpriteRenderer spriteRenderer;
+    [Header("Mirroring")]
+    public bool useFlipForWest = true;          // ← aynalamayı buradan aç/kapat
+    public SpriteRenderer spriteRenderer;       // Inspector’dan atayabilirsin
 
-    private Vector2 _moveInput;
-    private Vector2 _lastNonZero; // idle bakış yönü için
+    private Rigidbody2D rb;
+    private Animator animator;
+    private Vector2 _moveInput, _lastNonZero;
 
-    private void Reset()
+    private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        // SpriteRenderer aynı objede değilse çocuklarda ara ve bul:
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponentInChildren<SpriteRenderer>(true);
     }
 
-    // Input System: Player/Move (Vector2) action'ına bağlı
-    public void OnMove(InputValue value)
-    {
-        _moveInput = value.Get<Vector2>();
-    }
+    // Player Input (Send Messages) → Move action’ı
+    public void OnMove(InputValue value) => _moveInput = value.Get<Vector2>();
 
     private void Update()
     {
-        // Animator parametreleri (4 yön Blend Tree MoveX/MoveY + Idle için LastX/LastY)
+        // Animator parametreleri
         animator.SetFloat("MoveX", _moveInput.x);
         animator.SetFloat("MoveY", _moveInput.y);
-
         float speed = _moveInput.sqrMagnitude;
         animator.SetFloat("Speed", speed);
 
-        if (speed > 0.0001f)
-        {
+        if (speed > 0.0001f) {
             _lastNonZero = _moveInput.normalized;
             animator.SetFloat("LastX", _lastNonZero.x);
             animator.SetFloat("LastY", _lastNonZero.y);
             animator.SetBool("IsMoving", true);
-        }
-        else
-        {
+        } else {
             animator.SetBool("IsMoving", false);
         }
 
-        // Sol klibin yoksa flipX ile aynala (yürürken yatay baskınsa onu, duruyorsa son yönü kullan)
-        if (useFlipForWest)
+        // ← AYNALAMA (sola bakarken flipX=true)
+        if (useFlipForWest && spriteRenderer != null)
         {
+            // O anda yatay giriş varsa onu, yoksa son yönü baz al:
             float faceX = (Mathf.Abs(_moveInput.x) > 0.1f) ? _moveInput.x : _lastNonZero.x;
-            spriteRenderer.flipX = faceX < -0.1f;
+            spriteRenderer.flipX = faceX < -0.1f;  // sola bakıyorsa true
         }
-        else
+        else if (spriteRenderer != null)
         {
-            spriteRenderer.flipX = false;
+            spriteRenderer.flipX = false;          // kapattıysan güvenli sıfırla
         }
     }
 
@@ -67,7 +62,7 @@ public class TopDownController4Dir : MonoBehaviour
     {
         Vector2 v = _moveInput;
         if (normalizeDiagonal && v.sqrMagnitude > 1f) v = v.normalized;
-
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
         rb.MovePosition(rb.position + v * moveSpeed * Time.fixedDeltaTime);
     }
 }
