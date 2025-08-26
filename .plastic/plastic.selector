@@ -1,3 +1,3 @@
-repository "Farm Sunberry/Farm Sunberry Repo@18968305378249@cloud"
+rep "Farm Sunberry/Farm Sunberry Repo@18968305378249@cloud"
   path "/"
-    smartbranch "/main" changeset "27"
+    smartbranch "/main"
