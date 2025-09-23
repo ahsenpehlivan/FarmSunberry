@@ -1,10 +1,28 @@
 fileFormatVersion: 2
-guid: 59d85b0e777225c47860a8e2e47d016b
+guid: da9df230144a9e54da6568e67d1409ce
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -995540574003289439
-    second: "ChatGPT Image 25 A\u011Fu 2025 14_57_17_0"
+      213: -4061692414590273441
+    second: EnergyXpIconj_0
+  - first:
+      213: 5559468365834555069
+    second: EnergyXpIconj_1
+  - first:
+      213: -6991214297783874053
+    second: EnergyXpIconj_2
+  - first:
+      213: 8425372000084356764
+    second: EnergyXpIconj_3
+  - first:
+      213: -4571719607900119264
+    second: EnergyXpIconj_4
+  - first:
+      213: 6723893272614697684
+    second: EnergyXpIconj_5
+  - first:
+      213: 4015871123586708431
+    second: EnergyXpIconj_6
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -126,23 +144,45 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: "ChatGPT Image 25 A\u011Fu 2025 14_57_17_0"
+      name: EnergyXpIcon_0
       rect:
         serializedVersion: 2
-        x: 71
-        y: 66
-        width: 885
-        height: 888
+        x: 179
+        y: 115
+        width: 535
+        height: 768
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
-      tessellationDetail: -1
+      tessellationDetail: 0
       bones: []
-      spriteID: 1a2ab0f5f112f22f0800000000000000
-      internalID: -995540574003289439
+      spriteID: 200bf52ff94def643af37c0ad087c1d5
+      internalID: -471260041
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: EnergyXpIcon_1
+      rect:
+        serializedVersion: 2
+        x: 888
+        y: 116
+        width: 493
+        height: 769
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7d3473e10fb8cb44e9c26887637e2f09
+      internalID: -1959687813
       vertices: []
       indices: 
       edges: []
@@ -151,7 +191,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5b4fb680b233f5347bf233561381b10b
+    spriteID: fbbf9b1e62fdd1644a8a37480d9b1639
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +201,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      "ChatGPT Image 25 A\u011Fu 2025 14_57_17_0": -995540574003289439
+      EnergyXpIcon_0: -471260041
+      EnergyXpIcon_1: -1959687813
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

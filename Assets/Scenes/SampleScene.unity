@@ -353,6 +353,7 @@ MonoBehaviour:
   speed: 15
   stopThreshold: 0.05
   animator: {fileID: 0}
+  uiDocument: {fileID: 206034081}
   chooseDominantAxisAtClick: 1
 --- !u!114 &67517366
 MonoBehaviour:
@@ -424,6 +425,7 @@ GameObject:
   - component: {fileID: 206034082}
   - component: {fileID: 206034081}
   - component: {fileID: 206034083}
+  - component: {fileID: 206034084}
   m_Layer: 0
   m_Name: UI
   m_TagString: Untagged
@@ -475,6 +477,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 67839a6cbc6b7e74ca09185dff816527, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &206034084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 206034080}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 013b27623d3e5b340a9c1632f62b7e58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &519420028

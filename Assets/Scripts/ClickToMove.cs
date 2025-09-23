@@ -17,8 +17,8 @@ public class ClickToMove : MonoBehaviour
     Vector3 target;
 
     static readonly int IsMoving = Animator.StringToHash("isMoving");
-    static readonly int MoveX    = Animator.StringToHash("moveX");
-    static readonly int MoveY    = Animator.StringToHash("moveY");
+    static readonly int MoveX = Animator.StringToHash("moveX");
+    static readonly int MoveY = Animator.StringToHash("moveY");
 
     void Awake()
     {
