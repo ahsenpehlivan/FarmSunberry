@@ -1,72 +1,114 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ToolPaletteController : MonoBehaviour
+public class TopBarToolbarController : MonoBehaviour
 {
-    private VisualElement _root;
-    private VisualElement _bottomRightBtn;
-    private VisualElement _palette;
+    [SerializeField] UIDocument uiDocument;
+    [SerializeField] float animationDuration = 0.18f;   // saniye
+    [SerializeField] int itemSize = 64;                 // 64px ikon
+    [SerializeField] int gap = 8;                       // aralar 8px
+    [SerializeField] int padding = 8;                   // üst-alt 8px (ToolPalette’de verdik)
 
-    // seçili aracı highlight etmek için basit bir class adı
-    private const string SelectedClass = "tool-selected";
-    private VisualElement _currentSelected;
+    VisualElement bottomRightButton;
+    VisualElement toolPalette;
+
+    bool isOpen = false;
+    IVisualElementScheduledItem animHandle;
+    float animStartTime;
+    float startHeight, targetHeight;
+    float startOpacity, targetOpacity;
 
     void Awake()
     {
-        var doc = GetComponent<UIDocument>();
-        _root = doc.rootVisualElement;
-
-        _bottomRightBtn = _root.Q<VisualElement>("BottomRightButton");
-        _palette        = _root.Q<VisualElement>("ToolPalette");
-
-        // Aç/Kapa
-        _bottomRightBtn?.RegisterCallback<ClickEvent>(_ => TogglePalette());
-
-        // Araç butonlarına tıklama
-        var toolHoe   = _root.Q<VisualElement>("Tool_Hoe");
-        var toolAxe   = _root.Q<VisualElement>("Tool_Axe");
-        var toolWater = _root.Q<VisualElement>("Tool_Water");
-
-        toolHoe?.RegisterCallback<ClickEvent>(_ => SelectTool(toolHoe, "Hoe"));
-        toolAxe?.RegisterCallback<ClickEvent>(_ => SelectTool(toolAxe, "Axe"));
-        toolWater?.RegisterCallback<ClickEvent>(_ => SelectTool(toolWater, "WateringCan"));
-
-        // Palet açıkken dışarı tıklayınca kapat
-        _root.RegisterCallback<PointerDownEvent>(OnRootPointerDown);
+        if (uiDocument == null) uiDocument = GetComponent<UIDocument>();
     }
 
-    private void TogglePalette()
+    void OnEnable()
     {
-        if (_palette == null) return;
-        _palette.style.display = 
-            _palette.resolvedStyle.display == DisplayStyle.None ? DisplayStyle.Flex : DisplayStyle.None;
-    }
+        var root = uiDocument.rootVisualElement;
 
-    private void SelectTool(VisualElement ve, string toolId)
-    {
-        // basit highlight
-        if (_currentSelected != null) _currentSelected.RemoveFromClassList(SelectedClass);
-        _currentSelected = ve;
-        _currentSelected.AddToClassList(SelectedClass);
+        bottomRightButton = root.Q<VisualElement>("BottomRightButton");
+        toolPalette = root.Q<VisualElement>("ToolPalette");
 
-        // Tool seçimini burada oyun state'ine aktar (envanter, player controller vs.)
-        Debug.Log("Selected tool: " + toolId);
-
-        // seçince paleti kapatmak istersen:
-        _palette.style.display = DisplayStyle.None;
-    }
-
-    private void OnRootPointerDown(PointerDownEvent evt)
-    {
-        if (_palette == null) return;
-        if (_palette.resolvedStyle.display == DisplayStyle.None) return;
-
-        // tıklama panelin dışında mı?
-        var mousePos = evt.position;
-        if (!_palette.worldBound.Contains(mousePos) &&
-            !_bottomRightBtn.worldBound.Contains(mousePos))
+        // Güvenlik
+        if (bottomRightButton == null || toolPalette == null)
         {
-            _palette.style.display = DisplayStyle.None;
+            Debug.LogError("UI query failed: BottomRightButton or ToolPalette not found.");
+            return;
+        }
+
+        // Başlangıç kapalı
+        toolPalette.style.display = DisplayStyle.None;
+        toolPalette.style.opacity = 0f;
+        toolPalette.style.height = 0;
+
+        bottomRightButton.RegisterCallback<ClickEvent>(OnBottomRightClick);
+    }
+
+    void OnDisable()
+    {
+        if (bottomRightButton != null)
+            bottomRightButton.UnregisterCallback<ClickEvent>(OnBottomRightClick);
+        animHandle?.Pause();
+        animHandle = null;
+    }
+
+    void OnBottomRightClick(ClickEvent evt)
+    {
+        TogglePalette();
+    }
+
+    void TogglePalette()
+    {
+        // İçerik yüksekliğini hesapla: N adet ikon, aralarda (N-1)*gap, üst-alt padding*2
+        int n = toolPalette.childCount; // 3 (Hoe, Axe, Water)
+        int contentHeight = (n * itemSize) + ((n - 1) * gap) + (padding * 2);
+
+        // Hedef değerler
+        isOpen = !isOpen;
+
+        // Display'yi hemen açmazsak ölçüm yapamayız; anim başladıktan sonra kapatırsak flicker olmaz
+        if (isOpen && toolPalette.style.display == DisplayStyle.None)
+            toolPalette.style.display = DisplayStyle.Flex;
+
+        startHeight = toolPalette.resolvedStyle.height; // mevcut px
+        targetHeight = isOpen ? contentHeight : 0f;
+
+        startOpacity = toolPalette.resolvedStyle.opacity;
+        targetOpacity = isOpen ? 1f : 0f;
+
+        animStartTime = Time.realtimeSinceStartup;
+
+        // Her karede yükseklik & opacity lerp
+        animHandle?.Pause();
+        animHandle = toolPalette.schedule.Execute(Animate).Every(16); // ~60 FPS
+    }
+
+    void Animate()
+    {
+        float t = Mathf.InverseLerp(animStartTime, animStartTime + animationDuration, Time.realtimeSinceStartup);
+        t = Mathf.Clamp01(t);
+
+        // yumuşak ease-out
+        float eased = 1f - Mathf.Pow(1f - t, 3f);
+
+        float h = Mathf.Lerp(startHeight, targetHeight, eased);
+        float o = Mathf.Lerp(startOpacity, targetOpacity, eased);
+
+        toolPalette.style.height = h;
+        toolPalette.style.opacity = o;
+
+        // Bitti mi?
+        if (t >= 1f)
+        {
+            animHandle?.Pause();
+            animHandle = null;
+
+            if (!isOpen)
+            {
+                // kapanınca tıklamayı bloklamasın
+                toolPalette.style.display = DisplayStyle.None;
+            }
         }
     }
 }

@@ -1,0 +1,43 @@
+/* ToolPalette_baseline.uss — ultra-stable */
+
+.toolpalette {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    /* gap yerine margin kullanacağız (eski sürümler için güvenli) */
+    padding-left: 12px;
+    padding-right: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+
+    overflow: visible;
+    /* border, radius, transition, transform YOK */
+}
+
+.toolpalette-open {
+    display: flex;
+    /* opacity/transform yok */
+}
+
+.toolpalette-closed {
+    display: none;
+    /* opacity/transform yok */
+}
+
+/* Ölçeklemeyi USS’ten kaldırıyoruz; boyutu item seviyesinde kontrol */
+.tool-item {
+    width: 256px;                 /* büyüklük buradan */
+    height: 256px;
+    -unity-background-scale-mode: scale-to-fit;
+    cursor: pointer;
+    /* hover/transition yok */
+}
+
+/* Item’lar arası boşluk: margin ile */
+.tool-item + .tool-item {
+    margin-top: 12px;
+}
